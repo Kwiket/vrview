@@ -58,6 +58,10 @@ function Player(selector, contentInfo) {
 }
 Player.prototype = new EventEmitter();
 
+Player.prototype.addText = function(data) {
+  this.sender.send({type: Message.ADD_TEXT, data: data});
+}
+
 /**
  * @param pitch {Number} The latitude of center, specified in degrees, between
  * -90 and 90, with 0 at the horizon.
@@ -172,6 +176,7 @@ Player.prototype.onMessage_ = function(event) {
   var data = message.data;
 
   switch (type) {
+    case 'sceneloaded':
     case 'ready':
     case 'modechange':
     case 'error':
@@ -180,7 +185,7 @@ Player.prototype.onMessage_ = function(event) {
       if (type === 'ready') {
         if (data !== undefined) {
           this.duration = data.duration;
-	}
+	      }
       }
       this.emit(type, data);
       break;

@@ -49,6 +49,7 @@ a, a:visited {
 }
 
 #watermark img {
+  display: none;
   position: fixed;
   overflow: hidden;
   left: 0;

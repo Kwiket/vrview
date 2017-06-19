@@ -4,9 +4,11 @@ export { WebGLRenderer } from '../../../node_modules/three/src/renderers/WebGLRe
 export { Scene } from '../../../node_modules/three/src/scenes/Scene.js';
 export { Mesh } from '../../../node_modules/three/src/objects/Mesh.js';
 export { VideoTexture } from '../../../node_modules/three/src/textures/VideoTexture.js';
+export { Texture } from '../../../node_modules/three/src/textures/Texture.js';
 export { MeshBasicMaterial } from '../../../node_modules/three/src/materials/MeshBasicMaterial.js';
 export { ShaderMaterial } from '../../../node_modules/three/src/materials/ShaderMaterial.js';
 export { TextureLoader } from '../../../node_modules/three/src/loaders/TextureLoader.js';
+export { FontLoader } from '../../../node_modules/three/src/loaders/FontLoader.js';
 export { PerspectiveCamera } from '../../../node_modules/three/src/cameras/PerspectiveCamera.js';
 export { Object3D } from '../../../node_modules/three/src/core/Object3D.js';
 export { Raycaster } from '../../../node_modules/three/src/core/Raycaster.js';
@@ -22,7 +24,9 @@ export { Color } from '../../../node_modules/three/src/math/Color.js';
 export { TorusGeometry } from '../../../node_modules/three/src/geometries/TorusGeometry.js';
 export { SphereGeometry } from '../../../node_modules/three/src/geometries/SphereGeometry.js';
 export { CircleGeometry } from '../../../node_modules/three/src/geometries/CircleGeometry.js';
+export { TextGeometry } from '../../../node_modules/three/src/geometries/TextGeometry.js';
 export { RingGeometry } from '../../../node_modules/three/src/geometries/RingGeometry.js';
+export { PlaneGeometry } from '../../../node_modules/three/src/geometries/PlaneGeometry.js';
 export * from '../../../node_modules/three/src/constants.js';
 
 import '../../../node_modules/three/examples/js/controls/VRControls.js';

@@ -26,7 +26,7 @@ var ACTIVE_COLOR = new THREE.Color(0.8, 0, 0);
 var ACTIVE_DURATION = 100;
 
 // Constants for opacity.
-var MAX_INNER_OPACITY = 0.8;
+var MAX_INNER_OPACITY = 0.25;
 var MAX_OUTER_OPACITY = 0.5;
 var FADE_START_ANGLE_DEG = 35;
 var FADE_END_ANGLE_DEG = 60;
@@ -46,6 +46,7 @@ var FADE_END_ANGLE_DEG = 60;
 function HotspotRenderer(worldRenderer) {
   this.worldRenderer = worldRenderer;
   this.scene = worldRenderer.scene;
+  this.timer = null;
 
   // Note: this event must be added to document.body and not to window for it to
   // work inside iOS iframes.
@@ -106,7 +107,7 @@ HotspotRenderer.prototype.add = function(pitch, yaw, radius, distance, id) {
   quat.setFromEuler(new THREE.Euler(THREE.Math.degToRad(pitch), THREE.Math.degToRad(yaw), 0));
   hotspot.position.applyQuaternion(quat);
   hotspot.lookAt(new THREE.Vector3());
-  
+
   this.hotspotRoot.add(hotspot);
   this.hotspots[id] = hotspot;
 }
@@ -118,7 +119,7 @@ HotspotRenderer.prototype.add = function(pitch, yaw, radius, distance, id) {
  */
 HotspotRenderer.prototype.remove = function(id) {
   // If there's no hotspot with this ID, fail.
-  if (!this.hotspots[id]) { 
+  if (!this.hotspots[id]) {
     // TODO: Proper error reporting.
     console.error('Attempt to remove non-existing hotspot with id %s.', id);
     return;
@@ -155,7 +156,7 @@ HotspotRenderer.prototype.update = function(camera) {
     this.pointer.set(0, 0);
   }
   // Update the picking ray with the camera and mouse position.
-  this.raycaster.setFromCamera(this.pointer, camera);	
+  this.raycaster.setFromCamera(this.pointer, camera);
 
   // Fade hotspots out if they are really far from center to avoid overly
   // distorted visuals.
@@ -234,7 +235,7 @@ HotspotRenderer.prototype.updateTouch_ = function(e) {
   var size = this.getSize_();
   var touch = e.touches[0];
 	this.pointer.x = (touch.clientX / size.width) * 2 - 1;
-	this.pointer.y = - (touch.clientY / size.height) * 2 + 1;	
+	this.pointer.y = - (touch.clientY / size.height) * 2 + 1;
 };
 
 HotspotRenderer.prototype.onMouseDown_ = function(e) {
@@ -272,7 +273,7 @@ HotspotRenderer.prototype.onMouseUp_ = function(e) {
 HotspotRenderer.prototype.updateMouse_ = function(e) {
   var size = this.getSize_();
 	this.pointer.x = (e.clientX / size.width) * 2 - 1;
-	this.pointer.y = - (e.clientY / size.height) * 2 + 1;	
+	this.pointer.y = - (e.clientY / size.height) * 2 + 1;
 };
 
 HotspotRenderer.prototype.getSize_ = function() {
@@ -292,7 +293,7 @@ HotspotRenderer.prototype.createHotspot_ = function(radius, distance) {
   inner.name = 'inner';
 
   var outerMaterial = new THREE.MeshBasicMaterial({
-    color: 0xffffff, side: THREE.DoubleSide, transparent: true,
+    color: 0x8ad8f5, side: THREE.DoubleSide, transparent: true,
     opacity: MAX_OUTER_OPACITY, depthTest: false
   });
   var outerGeometry = new THREE.RingGeometry(radius * 0.85, radius, 32);
@@ -344,6 +345,20 @@ HotspotRenderer.prototype.fadeOffCenterHotspots_ = function(camera) {
   }
 };
 
+HotspotRenderer.prototype.setTimer_ = function(id) {
+  window.clearTimeout(this.timer);
+  this.timer = null;
+
+  if (id) {
+    this.timer = window.setTimeout(this.gaze_.bind(this, id), 3000);
+  }
+}
+
+HotspotRenderer.prototype.gaze_ = function(id) {
+  this.emit('click', id);
+  this.up_(id);
+}
+
 HotspotRenderer.prototype.focus_ = function(id) {
   var hotspot = this.hotspots[id];
 
@@ -351,11 +366,14 @@ HotspotRenderer.prototype.focus_ = function(id) {
   this.tween = new TWEEN.Tween(hotspot.scale).to(FOCUS_SCALE, FOCUS_DURATION)
       .easing(TWEEN.Easing.Quadratic.InOut)
       .start();
+
+  this.setTimer_(id);
 };
 
 HotspotRenderer.prototype.blur_ = function(id) {
   var hotspot = this.hotspots[id];
 
+  this.setTimer_();
   this.tween = new TWEEN.Tween(hotspot.scale).to(NORMAL_SCALE, FOCUS_DURATION)
       .easing(TWEEN.Easing.Quadratic.InOut)
       .start();
@@ -375,6 +393,7 @@ HotspotRenderer.prototype.up_ = function(id) {
   var hotspot = this.hotspots[id];
   var outer = hotspot.getObjectByName('inner');
 
+  this.setTimer_();
   this.tween = new TWEEN.Tween(outer.material.color).to(INACTIVE_COLOR, ACTIVE_DURATION)
       .start();
 };

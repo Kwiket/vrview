@@ -113,14 +113,14 @@ WorldRenderer.prototype.setScene = function(scene) {
       this.sphereRenderer.setPhotosphere(scene.preview, params).then(function() {
         // As soon as something is loaded, emit the load event to hide the
         // loading progress bar.
-        self.didLoad_();
+        self.didLoad_(scene);
         // Then load the full resolution image.
         self.sphereRenderer.setPhotosphere(scene.image, params);
       }).catch(self.didLoadFail_.bind(self));
     } else {
       // No preview -- go straight to rendering the full image.
       this.sphereRenderer.setPhotosphere(scene.image, params).then(function() {
-        self.didLoad_();
+        self.didLoad_(scene);
       }).catch(self.didLoadFail_.bind(self));
     }
   } else if (scene.video) {
@@ -252,6 +252,11 @@ WorldRenderer.prototype.init_ = function() {
   this.scene = this.createScene_();
   this.scene.add(this.camera.parent);
 
+  this.fontLoader = new THREE.FontLoader();
+  this.textRoot = new THREE.Object3D();
+  // Align the center with the center of the camera too.
+  this.textRoot.rotation.y = Math.PI / 2;
+  this.scene.add(this.textRoot);
 
   // Watch the resize event.
   window.addEventListener('resize', this.onResize_.bind(this));
@@ -326,5 +331,52 @@ WorldRenderer.prototype.onContextMenu_ = function(e) {
   e.stopPropagation();
   return false;
 };
+
+WorldRenderer.prototype.createText_ = function(text, color) {
+  var canvas = document.createElement('canvas');
+  var context = canvas.getContext('2d');
+
+  canvas.width = 340;
+  canvas.height = 210;
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  context.font = "Bold 50px Arial";
+  context.fillStyle = color || 'black';
+  context.fillText(text, canvas.width / 2, canvas.height / 2);
+
+  return canvas;
+}
+
+WorldRenderer.prototype.clearTexts = function() {
+  var texts = this.textRoot.children;
+
+  for (var i = 0; i < texts.length; i++) {
+    this.textRoot.remove(texts[i]);
+  }
+}
+
+WorldRenderer.prototype.addText = function(text, color, pitch, yaw, distance) {
+    var canvas = this.createText_(text, color);
+    var texture = new THREE.Texture(canvas)
+    texture.needsUpdate = true;
+
+    var obj = new THREE.Object3D();
+    var quat = new THREE.Quaternion();
+    var geometry = new THREE.PlaneGeometry(0.45, 0.25, 32);
+    var mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
+      map: texture,
+      side: THREE.DoubleSide,
+      transparent: true,
+      depthTest: false
+    }));
+
+    obj.position.z = -distance;
+    obj.add(mesh);
+    quat.setFromEuler(new THREE.Euler(THREE.Math.degToRad(pitch), THREE.Math.degToRad(yaw), 0));
+    obj.position.applyQuaternion(quat);
+    obj.lookAt(new THREE.Vector3());
+    this.textRoot.add(obj);
+    this.textRoot.visible = true;
+}
 
 module.exports = WorldRenderer;

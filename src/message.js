@@ -21,6 +21,7 @@ var Message = {
   PAUSE: 'pause',
   TIMEUPDATE: 'timeupdate',
   ADD_HOTSPOT: 'addhotspot',
+  ADD_TEXT: 'addtext',
   SET_CONTENT: 'setimage',
   SET_VOLUME: 'setvolume',
   SET_CURRENT_TIME: 'setcurrenttime',

@@ -33,6 +33,7 @@ var WorldRenderer = require('./world-renderer');
 var receiver = new IFrameMessageReceiver();
 receiver.on(Message.PLAY, onPlayRequest);
 receiver.on(Message.PAUSE, onPauseRequest);
+receiver.on(Message.ADD_TEXT, onAddText);
 receiver.on(Message.ADD_HOTSPOT, onAddHotspot);
 receiver.on(Message.SET_CONTENT, onSetContent);
 receiver.on(Message.SET_VOLUME, onSetVolume);
@@ -132,6 +133,11 @@ function onRenderLoad(event) {
 
     isReadySent = true;
   }
+
+  Util.sendParentMessage({
+    type: 'sceneloaded',
+    data: event
+  });
 }
 
 function onPlayRequest() {
@@ -150,6 +156,14 @@ function onPauseRequest() {
     return;
   }
   worldRenderer.videoProxy.pause();
+}
+
+function onAddText(e) {
+  var pitch = parseFloat(e.pitch);
+  var yaw = parseFloat(e.yaw);
+  var distance = parseFloat(e.distance);
+
+  worldRenderer.addText(e.text, e.color, pitch, yaw, distance);
 }
 
 function onAddHotspot(e) {
@@ -172,6 +186,7 @@ function onSetContent(e) {
   }
   // Remove all of the hotspots.
   worldRenderer.hotspotRenderer.clearAll();
+  worldRenderer.clearTexts();
   // Fade to black.
   worldRenderer.sphereRenderer.setOpacity(0, 500).then(function() {
     // Then load the new scene.

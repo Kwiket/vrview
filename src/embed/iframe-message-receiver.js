@@ -50,6 +50,7 @@ IFrameMessageReceiver.prototype.onMessage_ = function(event) {
     case Message.SET_CONTENT:
     case Message.SET_VOLUME:
     case Message.ADD_HOTSPOT:
+    case Message.ADD_TEXT:
     case Message.PLAY:
     case Message.PAUSE:
     case Message.SET_CURRENT_TIME:
