@@ -32,7 +32,7 @@ var scenes = {
     },
     texts: [
       {
-        text: 'Djois, it works',
+        text: '\u2190   20" (50cm) wide ><br>Ultra comfortable<br>Business seat<br><br>Customizable texts<br>Opportunity to upsell',
         color: 'blue',
         pitch: 25,
         yaw: 0,
@@ -69,7 +69,7 @@ var scenes = {
         distance: 1
       }
     },
-    texts: [
+    texts: [/*
       {
         text: 'Injected text',
         color: 'red',
@@ -77,7 +77,7 @@ var scenes = {
         yaw: -4,
         distance: 1
       }
-    ]
+     */]
   }
 };
 

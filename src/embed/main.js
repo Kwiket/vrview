@@ -163,7 +163,7 @@ function onAddText(e) {
   var yaw = parseFloat(e.yaw);
   var distance = parseFloat(e.distance);
 
-  worldRenderer.addText(e.text, e.color, pitch, yaw, distance);
+  worldRenderer.addText(e);
 }
 
 function onAddHotspot(e) {
