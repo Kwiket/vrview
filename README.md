@@ -3,7 +3,7 @@ VR View
 
 VR View allows you to embed 360 degree VR media into websites on desktop and
 mobile. For more information, please read the documentation available at
-<http://developers.google.com/cardboard/vrview>.
+<https://github.com/googlearchive/vrview>.
 
 # Building
 
